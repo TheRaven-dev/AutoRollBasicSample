@@ -24,6 +24,7 @@ namespace AutoRoll.CustomWowItemHandler
             {
                 _PurseItem = new PurseRollItem(int.Parse(Args[0]));
                 _PurseItem.DebugPrint();
+
             }
         }
     }
