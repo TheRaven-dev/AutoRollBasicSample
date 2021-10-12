@@ -1,40 +1,63 @@
-﻿using System;
+﻿using AutoRoll.Helpers;
+using robotManager.Helpful;
+using System;
 using wManager.Wow.Helpers;
 
 namespace AutoRoll.CustomWowItemHandler
 {
     public class PurseRollItem
     {
-        public String itemLink { get; set; }
+        public String ItemLink { get; set; }
         public String ItemName { get; set; }
+        public Int32 RollID { get; set; }
 
-        public PurseRollItem(String _ItemName, String _Itemlink)
+
+        public float Strength { get; set; }
+        public float Stamina { get; set; } 
+        public float Spirit { get; set; } 
+        public float SpellPower { get; set; } 
+        public float Agility { get; set; } 
+        public float Intellect { get; set; } 
+        public float Armor { get; set; }
+
+        public PurseRollItem(Int32 _RollID)
         {
-            this.itemLink = _Itemlink;
-            this.ItemName = _ItemName;
+            String[] GetItemToolTipPulse = LuaToolTipHelper.TestReader(_RollID).Split(';');
+            this.ItemName = GetItemToolTipPulse[0];
+            this.Strength = ItemHelpers.TryPurse(GetItemToolTipPulse[1]);
+            this.Stamina = ItemHelpers.TryPurse(GetItemToolTipPulse[2]);
+            this.Spirit = ItemHelpers.TryPurse(GetItemToolTipPulse[3]);
+            this.SpellPower = ItemHelpers.TryPurse(GetItemToolTipPulse[4]);
+            this.Agility = ItemHelpers.TryPurse(GetItemToolTipPulse[5]);
+            this.Intellect = ItemHelpers.TryPurse(GetItemToolTipPulse[6]);
+        }
+        public PurseRollItem(String _Itemlink)
+        {
+            //LuaToolTipHelper.TestReader(_Itemlink);
+
+            //String[] itemInfo = LuaToolTipHelper.ToolTipReader(_Itemlink).Split(';');
+            //this.ItemName = itemInfo[0];
+            //this.Intellect = float.Parse(itemInfo[1]);
         }
 
         public void pulse()
         {
-            CreateFrame();
-            Lua.LuaDoString($@"print(""trying to purse the item stats of {this.ItemName}"");
-                            {AutoRollToolTip}:ClearLines();
-                            {AutoRollToolTip}:SetHyperlink({this.itemLink});
-                            for i = 1, {AutoRollToolTip}:NumLines() do
-                                text = _G[""ItemRollLootStatTextLeft""..i]:GetText();
-                                print(text);
-                            end
-                            print(""pursing of {this.ItemName} Completed."");");
+
         }
 
-        private void CreateFrame()
+        public void DebugPrint()
         {
-            Lua.LuaDoString($@"if not {AutoRollToolTip} then 
-                                {AutoRollToolTip} = CreateFrame('GameTooltip', 'ItemRollLootStat', UIParent, 'GameTooltipTemplate') 
-                                {AutoRollToolTip}:SetOwner(UIParent, 'ANCHOR_NONE');
-                                print('{AutoRollToolTip} was created.')
-                        end");
+            Logging.Write($"Item Pursing" + Environment.NewLine + 
+                          $"ItenName = " + this.ItemName + Environment.NewLine +
+                          $"Strength = " + this.Stamina + Environment.NewLine +
+                          $"Stamina = " + this.Stamina + Environment.NewLine +
+                          $"Spirit = " + this.Spirit + Environment.NewLine +
+                          $"SpellPower " + this.SpellPower + Environment.NewLine +
+                          $"Agility = " + this.Agility + Environment.NewLine +
+                          $"Intellect = " + this.Intellect + Environment.NewLine +
+                          $"Armor = " + this.Armor + Environment.NewLine +
+                          $"Item Pursing ended" + Environment.NewLine
+                          );
         }
-        private static String AutoRollToolTip = "AutoRollToolTip";
     }
 }
